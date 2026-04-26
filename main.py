@@ -6,7 +6,13 @@ def main():
     print("This is a boilerplate entry point for your Python application.")
 
     model="stabilityai/sdxl-turbo"
-    pipeline = AutoPipelineForText2Image.from_pretrained(model).to('cpu')
+    # Force float32 to avoid "Half and Float" mismatch on CPU
+    pipeline = AutoPipelineForText2Image.from_pretrained(
+        model, 
+        torch_dtype=torch.float32,
+        use_safetensors=True
+    )
+    pipeline.to("cpu")
 
     height=512
     width=512
