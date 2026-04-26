@@ -1,30 +1,41 @@
 import ollama
 import sys
 
-def generate_response(prompt, model="gemma4:31b-cloud"):
+def generate_response(prompt, model="gemma4:31b-cloud", context=None):
     """
-    Volá lokální Ollama endpoint a vrací vygenerovaný text.
+    Volá lokální Ollama endpoint. Přijímá 'context' pro udržení paměti konverzace.
+    Vrací (odpověď, nový_kontext).
     """
-    print(f"Dotazuji se modelu '{model}'...")
     try:
-        response = ollama.generate(model=model, prompt=prompt)
-        return response['response']
+        response = ollama.generate(
+            model=model, 
+            prompt=prompt, 
+            context=context,
+            system="Jsi kreativní asistent, který odpovídá stručně a k věci."
+        )
+        return response['response'], response.get('context')
     except Exception as e:
-        return f"Chyba při komunikaci s Ollamou: {e}"
+        print(f"Chyba při komunikaci s Ollamou: {e}")
+        return None, None
 
 def main():
-    # Výchozí prompt nebo prompt z argumentů
-    prompt = "Napiš krátký úvod do historie umělé inteligence."
-    if len(sys.argv) > 1:
-        prompt = " ".join(sys.argv[1:])
-
-    response = generate_response(prompt)
+    model = "gemma4:31b-cloud"
+    context = None
     
-    print("\n" + "="*20)
-    print("ODPOVĚĎ:")
-    print("="*20)
-    print(response)
-    print("="*20)
+    print(f"--- Interaktivní režim s kontextem (model: {model}) ---")
+    print("Napište 'exit' pro ukončení.\n")
+
+    while True:
+        user_input = input("Vy: ")
+        if user_input.lower() in ['exit', 'quit', 'konec']:
+            break
+            
+        response_text, context = generate_response(user_input, model=model, context=context)
+        
+        if response_text:
+            print(f"\nOllama: {response_text}\n")
+        else:
+            print("Nepodařilo se získat odpověď.")
 
 if __name__ == "__main__":
     main()
