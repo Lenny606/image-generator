@@ -21,6 +21,17 @@ This project uses [Poetry](https://python-poetry.org/) for dependency management
    poetry run python main.py
    ```
 
+## Ollama Script
+
+Jednoduchý skript pro interakci s lokální Ollamou.
+
+### Použití
+Skript používá model `gemma4:31b-cloud`.
+
+```bash
+poetry run python ollama_script.py "Jak funguje generování obrazu?"
+```
+
 ## Development
 
 - Add a new dependency: `poetry add <package>`
